@@ -16,7 +16,7 @@ pipeline {
             // Actual test commands in a single shell block
 
              sh '''
-                  export PATH=$PATH:/C:/Users/simon/go/bin
+                  export PATH=$PATH:$(go env GOPATH)/bin
                 go install github.com/jstemmer/go-junit-report/v2@latest
                 go version
                 go test -v ./... 2>&1 | go-junit-report > test-results.xml
