@@ -6,7 +6,9 @@ pipeline {
     }
 
     stages {
-        stage('Unit Tests - Backend') {
+        stage('Execute Unit Tests') {
+            paralel {
+                stage('Unit Tests - Backend') {
             steps {
                 dir('bugtracker-backend') {
                           // Diagnostic commands to verify GOPATH and binary presence
@@ -41,7 +43,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Test Frontend') {
+         stage('Build and Test Frontend') {
             steps {
                 dir('bugtracker-frontend') {
                     sh '''
@@ -64,6 +66,8 @@ pipeline {
                 }
             }
 
+        }
+            }
         }
     }
 }
