@@ -44,11 +44,13 @@ pipeline {
         stage('Build and Test Frontend') {
             steps {
                 dir('bugtracker-frontend') {
-                    sh 'npm --version'
-                    sh 'npm install'
-                    sh 'npm test' // or another frontend build/test command
+                    sh '''
+                    npm --version
+                    npm install
+                    npm test 
                     mkdir -p reports
                     mv coverage reports/
+                    '''
                 }
             }
             post {
