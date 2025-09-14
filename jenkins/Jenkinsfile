@@ -9,6 +9,12 @@ pipeline {
         stage('Unit Tests - Backend') {
             steps {
                 dir('bugtracker-backend') {
+                          // Diagnostic commands to verify GOPATH and binary presence
+            sh 'go env GOPATH'
+            sh 'ls -l $(go env GOPATH)/bin'
+
+            // Actual test commands in a single shell block
+
              sh '''
                   export PATH=$PATH:/C:/Users/simon/go/bin
                 go install github.com/jstemmer/go-junit-report/v2@latest
