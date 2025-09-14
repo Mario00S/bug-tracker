@@ -2,77 +2,71 @@ pipeline {
     agent any
     tools { 
         go '1.19'
-        nodejs 'NodeJS 24' // Name as defined in Jenkins configuration
+        nodejs 'NodeJS 24'
     }
-
     stages {
         stage('Execute Unit Tests') {
-            paralel {
+            parallel {  // fixed spelling here
                 stage('Unit Tests - Backend') {
-            steps {
-                dir('bugtracker-backend') {
-                          // Diagnostic commands to verify GOPATH and binary presence
-            sh 'go env GOPATH'
-            sh 'ls -l $(go env GOPATH)/bin'
+                    steps {
+                        dir('bugtracker-backend') {
+                            sh 'go env GOPATH'
+                            sh 'ls -l $(go env GOPATH)/bin'
 
-            // Actual test commands in a single shell block
+                            sh '''
+                                export PATH=$PATH:$(go env GOPATH)/bin
+                                go install github.com/jstemmer/go-junit-report/v2@latest
+                                go version
+                                go test -v ./... 2>&1 | go-junit-report > test-results.xml
 
-             sh '''
-                  export PATH=$PATH:$(go env GOPATH)/bin
-                go install github.com/jstemmer/go-junit-report/v2@latest
-                go version
-                go test -v ./... 2>&1 | go-junit-report > test-results.xml
+                                go test -coverprofile=coverage.out -covermode=atomic ./...
+                                go tool cover -html coverage.out -o coverage.html
 
-                # Generate Coverage Report
-                go test -coverprofile=coverage.out -covermode=atomic ./...
-                go tool cover -html coverage.out -o coverage.html
-
-                mkdir -p reports
-                mv coverage.html reports/
-            '''
+                                mkdir -p reports
+                                mv coverage.html reports/
+                            '''
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'bugtracker-backend/test-results.xml'
+                            publishHTML target: [
+                                reportDir: 'bugtracker-backend/reports',
+                                reportFiles: 'coverage.html',
+                                reportName: 'Backend Coverage Report'
+                            ]
+                        }
+                    }
                 }
-            }
-            post {
-                always {
-                    junit 'bugtracker-backend/test-results.xml'
-                    publishHTML target: [
-                        reportDir: 'bugtracker-backend/reports',
-                        reportFiles: 'coverage.html',
-                        reportName: 'Backend Coverage Report'
-                    ]
+                stage('Build and Test Frontend') {
+                    steps {
+                        dir('bugtracker-frontend') {
+                            sh '''
+                                npm --version
+                                npm install
+                                npm test 
+                                mkdir -p reports
+                                mv coverage reports/
+                            '''
+                        }
+                    }
+                    post {
+                        always {
+                            junit 'bugtracker-frontend/test-results.xml'   
+                            publishHTML target: [
+                                reportDir: 'bugtracker-frontend/reports/coverage',
+                                reportFiles: 'index.html',
+                                reportName: 'Frontend Coverage Report'
+                            ]
+                        }
+                    }
                 }
-            }
-        }
-         stage('Build and Test Frontend') {
-            steps {
-                dir('bugtracker-frontend') {
-                    sh '''
-                    npm --version
-                    npm install
-                    npm test 
-                    mkdir -p reports
-                    mv coverage reports/
-                    '''
-                }
-            }
-            post {
-                always {
-                 junit 'bugtracker-frontend/test-results.xml'   
-                 publishHTML target: [
-                    reportDir: 'bugtracker-frontend/reports/coverage',
-                    reportFiles: 'index.html',
-                    reportName: 'Frontend Coverage Report'
-                 ]
-                }
-            }
-
-        }
             }
         }
     }
     post {
         always {
-            cleanWS ()
+            cleanWs()
         }
     }
 }
