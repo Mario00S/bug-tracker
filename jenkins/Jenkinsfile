@@ -22,6 +22,12 @@ pipeline {
                     sh 'npm test' // or another frontend build/test command
                 }
             }
+            post {
+                always {
+                 junit 'bugtracker-frontend/test-results.xml'   
+                }
+            }
+
         }
     }
 }
