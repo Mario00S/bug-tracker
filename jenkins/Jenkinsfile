@@ -1,13 +1,25 @@
 pipeline {
     agent any
-      tools { go '1.19' }
+    tools { 
+        go '1.19'
+        nodejs 'NodeJS 24' // Name as defined in Jenkins configuration
+    }
 
     stages {
         stage('Unit Tests - Backend') {
             steps {
-                dir ('bugtracker-backend') {
-                 sh 'go version'    
-                 sh 'go test -v ./...'
+                dir('bugtracker-backend') {
+                    sh 'go version'
+                    sh 'go test -v ./...'
+                }
+            }
+        }
+        stage('Build and Test Frontend') {
+            steps {
+                dir('bugtracker-frontend') {
+                    sh 'npm --version'
+                    sh 'npm install'
+                    sh 'npm test' // or another frontend build/test command
                 }
             }
         }
