@@ -134,9 +134,8 @@ pipeline {
         }
     }
 
-
-stage('Performance Tests') {
-agent {
+        stage('Performance Tests') {
+            agent {
             docker {
                 image 'grafana/k6:latest'
                 reuseNode true
@@ -149,8 +148,8 @@ agent {
                 sh 'k6 run script.js'
             }
     }
-}
-       post {
+
+           post {
         always {
             publishHTML target: [
                 reportDir: 'tests-perf',
@@ -158,12 +157,11 @@ agent {
                 reportName: 'K6 Performance Test Report'
             ]
        }
+}
     }
-    
-    post {
+        post {
         always {
             cleanWs()
         }
     }
-}
 }
