@@ -76,8 +76,8 @@ pipeline {
             }
         }
 
-        stage('Api Tests')
-            agent {
+        stage('Api Tests') {
+                        agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
                     reuseNode true
@@ -91,6 +91,7 @@ pipeline {
                   sh 'npx playwright test'
                 }
             }
+        }
     }
     post {
         always {
