@@ -147,6 +147,7 @@ pipeline {
                 sh 'k6 version'
                 sh 'k6 run script.js'
             }
+        }
     }
 
            post {
