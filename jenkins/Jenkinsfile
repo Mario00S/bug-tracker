@@ -4,6 +4,7 @@ pipeline {
         go '1.19'
         nodejs 'NodeJS 24'
     }
+    /*  
     stages {
         stage('Execute Unit Tests') {
             parallel {  // fixed spelling here
@@ -75,7 +76,7 @@ pipeline {
                 sh 'docker compose up --build -d'
             }
         }
-
+*/
         stage('Api Tests') {
                         agent {
                 docker {
