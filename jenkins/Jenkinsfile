@@ -107,7 +107,7 @@ pipeline {
             }   
         }
 
-        stage('E2E Tests')
+        stage('E2E Tests') {
         agent {
         docker {
             image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
@@ -121,6 +121,8 @@ pipeline {
             }
         }
         }
+        }
+
     }
     post {
         always {
